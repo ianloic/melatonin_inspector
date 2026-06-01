@@ -52,7 +52,7 @@ namespace melatonin
             return connection;
         }
 
-        void start (int port = 42424)
+        void start (int port = 8484)
         {
             beginWaitingForSocket (port);
         }

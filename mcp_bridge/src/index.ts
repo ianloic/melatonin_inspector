@@ -113,7 +113,7 @@ class MelatoninInspectorServer {
             }
         );
 
-        this.ipcClient = new IpcClient(42424);
+        this.ipcClient = new IpcClient(8484);
 
         this.setupToolHandlers();
         
