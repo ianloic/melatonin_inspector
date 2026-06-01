@@ -17,7 +17,7 @@ namespace melatonin
     {
     public:
         explicit IpcConnection (Inspector& inspectorRef)
-            : juce::InterprocessConnection (false), inspector (inspectorRef) {}
+            : juce::InterprocessConnection (false, 0x2172746a), inspector (inspectorRef) {}
 
         void connectionMade() override {}
         void connectionLost() override {}
