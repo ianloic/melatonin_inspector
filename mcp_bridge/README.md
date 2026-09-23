@@ -8,7 +8,7 @@ By running this bridge alongside your JUCE application, you can expose the inter
 
 The system is composed of two main parts:
 
-1. **JUCE IPC Server (C++)**: An embedded TCP server running inside `melatonin_inspector` on port `42424`. It listens for incoming JSON-RPC style messages over JUCE's `InterprocessConnection` protocol and executes them on the JUCE Message Thread.
+1. **JUCE IPC Server (C++)**: An embedded TCP server running inside `melatonin_inspector` on `127.0.0.1` port `8484`. It listens for incoming JSON-RPC style messages over JUCE's `InterprocessConnection` protocol and executes them on the JUCE Message Thread.
 2. **MCP Bridge (TypeScript)**: A standalone Node.js process that communicates with the C++ IPC Server via TCP. It acts as an MCP Server, translating standard MCP Tool definitions into the raw IPC commands understood by the JUCE application.
 
 ## 1. Setup Your JUCE Application
@@ -28,8 +28,8 @@ public:
     {
         // ... configure your window ...
 
-        // The second parameter `true` automatically enables the inspector
-        // at startup, which immediately binds the IPC Server to port 42424.
+        // Constructing the inspector starts the IPC Server on port 8484.
+        // The second parameter `true` also opens the inspector at startup.
         inspector.setVisible(true);
     }
 
@@ -39,7 +39,7 @@ private:
 };
 ```
 
-When your application runs and the inspector is enabled, it will silently start listening for local connections on port `42424`.
+As soon as the `melatonin::Inspector` is constructed it listens for connections from this machine on port `8484`, whether or not the inspector window is open.
 
 ## 2. Setup the MCP Bridge
 
@@ -122,5 +122,5 @@ Once connected, the bridge exposes the following tools to the AI agent:
 
 ## Troubleshooting
 
-- **Connection Refused**: Ensure your JUCE application is running and the inspector is enabled. The C++ IPC Server only starts when the inspector is toggled on.
-- **Port Conflicts**: The IPC Server currently binds to port `42424` by default. If this port is in use, the C++ IPC server will fail to start.
+- **Connection Refused**: Ensure your JUCE application is running and has constructed a `melatonin::Inspector`. The bridge retries the connection every few seconds.
+- **Port Conflicts**: The IPC Server binds to `127.0.0.1` port `8484`. If this port is in use, the C++ IPC server will fail to start.

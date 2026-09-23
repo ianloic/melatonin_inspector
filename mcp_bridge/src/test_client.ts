@@ -90,7 +90,7 @@ class TestClient {
 }
 
 async function run() {
-  const client = new TestClient(42424);
+  const client = new TestClient(8484);
   try {
     console.log("Connecting to IPC Server...");
     await client.connect();
