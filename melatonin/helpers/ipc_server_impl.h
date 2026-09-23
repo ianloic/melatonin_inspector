@@ -76,10 +76,12 @@ namespace melatonin
         details->setProperty ("type", model.typeValue.getValue().toString());
         details->setProperty ("lookAndFeel", model.lookAndFeelValue.getValue().toString());
         details->setProperty ("font", model.fontValue.getValue().toString());
-        details->setProperty ("x", model.xValue.getValue());
-        details->setProperty ("y", model.yValue.getValue());
-        details->setProperty ("width", model.widthValue.getValue());
-        details->setProperty ("height", model.heightValue.getValue());
+        // ComponentModel leaves its geometry values to the bounds panel, so
+        // they are empty here; read the bounds straight from the component.
+        details->setProperty ("x", c->getX());
+        details->setProperty ("y", c->getY());
+        details->setProperty ("width", c->getWidth());
+        details->setProperty ("height", c->getHeight());
         details->setProperty ("visible", model.visibleValue.getValue());
         details->setProperty ("enabled", model.enabledValue.getValue());
         details->setProperty ("opaque", model.opaqueValue.getValue());
