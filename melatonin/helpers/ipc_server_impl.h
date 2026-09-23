@@ -1,27 +1,15 @@
 #pragma once
 
-#include <iostream>
-
 namespace melatonin
 {
     inline void IpcConnection::messageReceived (const juce::MemoryBlock& message)
     {
-        juce::String jsonString = message.toString();
-        std::cout << "Received IPC message: " << jsonString.toStdString() << std::endl;
-        auto json = juce::JSON::parse (jsonString);
+        // The connection delivers its callbacks on the message thread, so the
+        // request can touch components directly.
+        auto json = juce::JSON::parse (message.toString());
 
         if (json.isObject())
-        {
-            std::cout << "Parsed JSON successfully, dispatching..." << std::endl;
-            juce::MessageManager::callAsync ([this, json]() {
-                std::cout << "On Message Thread!" << std::endl;
-                handleMessageOnMessageThread (json);
-            });
-        }
-        else
-        {
-            std::cout << "Failed to parse JSON object" << std::endl;
-        }
+            handleMessage (json);
     }
 
     inline void IpcConnection::sendMessage (const juce::String& text)
@@ -111,7 +99,7 @@ namespace melatonin
         return details;
     }
 
-    inline void IpcConnection::handleMessageOnMessageThread (const juce::var& json)
+    inline void IpcConnection::handleMessage (const juce::var& json)
     {
         juce::String action = json.getProperty ("action", "").toString();
         juce::String msgId = json.getProperty ("msg_id", "").toString();

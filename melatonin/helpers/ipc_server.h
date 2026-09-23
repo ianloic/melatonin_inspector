@@ -17,13 +17,20 @@ namespace melatonin
     {
     public:
         explicit IpcConnection (Inspector& inspectorRef)
-            : juce::InterprocessConnection (false, 0x2172746a), inspector (inspectorRef) {}
+            : juce::InterprocessConnection (true, 0x2172746a), inspector (inspectorRef) {}
+
+        ~IpcConnection() override
+        {
+            // InterprocessConnection requires subclasses to disconnect before
+            // they are destroyed, so no callback reaches a half-deleted object.
+            disconnect();
+        }
 
         void connectionMade() override {}
         void connectionLost() override {}
 
         void messageReceived (const juce::MemoryBlock& message) override;
-        void handleMessageOnMessageThread (const juce::var& json);
+        void handleMessage (const juce::var& json);
         void sendMessage (const juce::String& text);
 
     private:
@@ -52,9 +59,12 @@ namespace melatonin
             return connection;
         }
 
-        void start (int port = 8484)
+        // Listens on the loopback interface only: the protocol can click
+        // buttons, resize components and quit the app, so it must not be
+        // reachable from other machines.
+        bool start (int port = 8484)
         {
-            beginWaitingForSocket (port);
+            return beginWaitingForSocket (port, "127.0.0.1");
         }
 
     private:

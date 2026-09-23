@@ -100,6 +100,9 @@ namespace melatonin
 
         ~Inspector() override
         {
+            // stop answering IPC requests before anything they could reach goes away
+            ipcServer.reset();
+
             clearRoot();
 
             this->removeKeyListener (&keyListener);
